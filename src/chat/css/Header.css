@@ -1,0 +1,27 @@
+
+.header_team_name {
+    align-self: center;
+    padding: 10px;
+    flex: 1;  
+}
+
+.header_service_button {
+    align-self: center;
+    margin-right: 10px;
+    box-sizing: border-box;
+    border-radius: 5px;
+}
+
+.header_close_button {
+    align-self: center;
+    height: 40px;
+    margin-right: 10px;
+    box-sizing: border-box;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.header_text {
+    font-size: 20px;
+    color:white;
+}
