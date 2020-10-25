@@ -13,12 +13,10 @@
 }
 
 .header_close_button {
-    align-self: center;
     height: 40px;
     margin-right: 10px;
     box-sizing: border-box;
     cursor: pointer;
-    border-radius: 5px;
 }
 
 .header_text {

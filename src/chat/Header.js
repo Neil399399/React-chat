@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React from 'react'
 import './css/Header.css'
-import { Container, Segment, Header as HeaderUI } from 'semantic-ui-react'
+import { Segment, Button } from 'semantic-ui-react'
 
 
 function Header() {
@@ -12,6 +12,7 @@ function Header() {
             size="massive"
         >
             Header
+            <Button circular icon="close" inverted style={{ position: 'absolute', left: '97%' }} />
         </Segment>
     )
 }
