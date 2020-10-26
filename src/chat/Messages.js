@@ -6,7 +6,12 @@ import './css/Message.css'
 
 function Messages({ messages }) {
     return (
-        <Segment className='message_list'>
+        <Segment style={{
+            height: '60vh',
+            overflowY: 'scroll',
+            backgroundSize: '100%',
+            padding: '20px 0px'
+        }}>
             {messages.map((message) => <RenderMessage message={message} />)}
         </Segment>
     )
@@ -14,22 +19,21 @@ function Messages({ messages }) {
 export default Messages
 
 function RenderMessage({ message }) {
-
     const renderRow = (message) => {
-        const { type, messageType, content, timestamp } = message
+        const { type, contentType, content, timestamp, user } = message
         switch (type) {
             case 'send':
                 return (
-                    <Feed.Event>
-                        <Feed.Content>
-                            <Feed.Summary>
+                    <Feed.Event style={{ justifyContent: 'flex-end', marginLeft: '30%', marginRight: '1%' }}>
+                        <Feed.Content style={{ flex: 'inherit' }}>
+                            <Feed.Summary style={{ display: 'flex', justifyContent: 'flex-end' }}>
                                 <Feed.Date>
-                                    {timestamp}
+                                    {displayTime(timestamp)}
                                 </Feed.Date>
                             </Feed.Summary>
                             <Feed.Extra>
-                                <Message >
-                                    {content}
+                                <Message>
+                                    <RenderContent content={content} contentType={contentType} />
                                 </Message>
                             </Feed.Extra>
                         </Feed.Content>
@@ -38,17 +42,20 @@ function RenderMessage({ message }) {
             case 'receive':
                 return (
                     <React.Fragment>
-                        <Feed.Event>
+                        <Feed.Event style={{ maxWidth: '70%' }}>
                             <Feed.Label icon="user circle outline" />
-                            <Feed.Content>
+                            <Feed.Content style={{ flex: 'inherit' }}>
                                 <Feed.Summary>
+                                    <Feed.User>
+                                        {user}
+                                    </Feed.User>
                                     <Feed.Date>
-                                        {timestamp}
+                                        {displayTime(timestamp)}
                                     </Feed.Date>
                                 </Feed.Summary>
                                 <Feed.Extra>
                                     <Message>
-                                        {content}
+                                        <RenderContent content={content} contentType={contentType} />
                                     </Message>
                                 </Feed.Extra>
                             </Feed.Content>
@@ -62,9 +69,32 @@ function RenderMessage({ message }) {
 
     return (
         <React.Fragment>
-            <Feed style={{ height: '80px', width: 'auto', maxWidth: '50%' }}>
+            <Feed style={{ display: 'flex' }}>
                 {renderRow(message)}
             </Feed>
         </React.Fragment>
     )
+}
+
+function RenderContent({ content, contentType }) {
+    switch (contentType) {
+        case 'text':
+            return content
+        case 'image':
+            return (
+                <Feed.Extra images >
+                    <img src={content} style={{ width: '100%' }} />
+                </Feed.Extra>
+            )
+        default:
+            return null
+    }
+
+}
+
+function displayTime(timestamp) {
+    const date = new Date(timestamp / 1000)
+    const hours = date.getHours()
+    const minutes = (`0${date.getMinutes()}`).slice(-2)
+    return `${hours}:${minutes}`
 }

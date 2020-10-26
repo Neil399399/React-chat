@@ -1,18 +1,22 @@
 import React from 'react'
 import './css/Header.css'
-import { Segment, Button } from 'semantic-ui-react'
+import { Segment, Button, Header as HeaderUI, Icon } from 'semantic-ui-react'
 
 
 function Header() {
     return (
         <Segment
-            textAlign="left"
+            clearing
             color="orange"
             inverted
-            size="massive"
+            style={{ display: 'flex' }}
         >
-            Header
-            <Button circular icon="close" inverted style={{ position: 'absolute', left: '97%' }} />
+            <HeaderUI as='h1' content="header" style={{ display: 'flex', margin: 0 }} />
+            <HeaderUI as='h2' floated='right' style={{ display: 'flex', justifyContent: 'flex-end', width: '100%' }}>
+                <Button icon inverted >
+                    <Icon name="close" />
+                </Button>
+            </HeaderUI>
         </Segment>
     )
 }

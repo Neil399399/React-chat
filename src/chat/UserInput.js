@@ -6,16 +6,13 @@ function UserInput() {
     return (
         <Segment>
             <div style={{ display: 'flex' }}>
-                <Form style={{ width: '100%' }}>
+                <Form style={{ width: '100%', marginRight: '1%' }}>
                     <Form.Field>
                         <Form.Input placeholder='Reply ...' />
                     </Form.Field >
                 </Form>
-                <Button>
-                    <Button.Content >
-                        <Icon name="send" />
-                    </Button.Content>
-                </Button>
+                <Button icon="image" />
+                <Button icon="send" />
             </div>
         </Segment>
     )
