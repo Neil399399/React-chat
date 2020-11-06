@@ -1,7 +1,5 @@
 import React from 'react'
-import './css/Header.css'
 import { Segment, Button, Header as HeaderUI, Icon } from 'semantic-ui-react'
-
 
 function Header() {
     return (

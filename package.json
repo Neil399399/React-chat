@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@aetheras/ejchatjs": "^0.0.9",
+    "@aetheras/ejchatjs": "^0.0.12",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -20,7 +20,8 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.0",
     "typescript": "~3.7.2",
-    "xstate": "^4.13.0"
+    "xstate": "^4.13.0",
+    "yup": "^0.29.3"
   },
   "scripts": {
     "start": "react-scripts start",

@@ -1,10 +1,22 @@
 
-import React from 'react'
-import { Message, Segment, Icon, Feed } from 'semantic-ui-react'
+import React, { useEffect, useState } from 'react'
+import { Message, Segment, Feed } from 'semantic-ui-react'
+import { displayTime } from '../utils/utils'
+import { useService } from '@xstate/react'
+import { SocketMachineMg as SocketMachine, ChatMachineMg as ChatMachine } from '@aetheras/ejchatjs'
+import { mongooseimSocketService } from './chatMachineStart'
 
-import './css/Message.css'
+function Messages({ roomId }) {
+    const [mgCurrent] = useService(mongooseimSocketService)
+    const [history, setHistory] = useState(null)
 
-function Messages({ messages }) {
+    useEffect(() => {
+        if (roomId && mgCurrent.matches(SocketMachine.STATES.CONNECTED)) {
+            let service = mgCurrent.context.roomMachines.get(roomId)
+            service && setHistory(service.state.context.messageStore)
+        }
+    }, [mgCurrent])
+
     return (
         <Segment style={{
             height: '60vh',
@@ -12,17 +24,34 @@ function Messages({ messages }) {
             backgroundSize: '100%',
             padding: '20px 0px'
         }}>
-            {messages.map((message) => <RenderMessage message={message} />)}
+            {history && history.map((message) => <RenderMessage key={message.id} message={message} />)}
         </Segment>
     )
 }
 export default Messages
 
 function RenderMessage({ message }) {
+
+    const displayContent = (content, contentType) => {
+        switch (contentType) {
+            case 'TEXT':
+                return content
+            case 'IMG':
+                return (
+                    <Feed.Extra images >
+                        <img src={content} alt="" style={{ width: '100%' }} />
+                    </Feed.Extra>
+                )
+            default:
+                return null
+        }
+    }
+
+
     const renderRow = (message) => {
-        const { type, contentType, content, timestamp, user } = message
+        const { type, contentType, content, timestamp, id } = message
         switch (type) {
-            case 'send':
+            case 'sent':
                 return (
                     <Feed.Event style={{ justifyContent: 'flex-end', marginLeft: '30%', marginRight: '1%' }}>
                         <Feed.Content style={{ flex: 'inherit' }}>
@@ -33,68 +62,40 @@ function RenderMessage({ message }) {
                             </Feed.Summary>
                             <Feed.Extra>
                                 <Message>
-                                    <RenderContent content={content} contentType={contentType} />
+                                    {displayContent(content, contentType)}
                                 </Message>
                             </Feed.Extra>
                         </Feed.Content>
                     </Feed.Event>
                 )
-            case 'receive':
+            case 'received':
                 return (
-                    <React.Fragment>
-                        <Feed.Event style={{ maxWidth: '70%' }}>
-                            <Feed.Label icon="user circle outline" />
-                            <Feed.Content style={{ flex: 'inherit' }}>
-                                <Feed.Summary>
-                                    <Feed.User>
-                                        {user}
-                                    </Feed.User>
-                                    <Feed.Date>
-                                        {displayTime(timestamp)}
-                                    </Feed.Date>
-                                </Feed.Summary>
-                                <Feed.Extra>
-                                    <Message>
-                                        <RenderContent content={content} contentType={contentType} />
-                                    </Message>
-                                </Feed.Extra>
-                            </Feed.Content>
-                        </Feed.Event>
-                    </React.Fragment>
+                    <Feed.Event style={{ maxWidth: '70%' }}>
+                        <Feed.Label icon="user circle outline" />
+                        <Feed.Content style={{ flex: 'inherit' }}>
+                            <Feed.Summary>
+                                <Feed.User>
+                                    {id}
+                                </Feed.User>
+                                <Feed.Date>
+                                    {displayTime(timestamp)}
+                                </Feed.Date>
+                            </Feed.Summary>
+                            <Feed.Extra>
+                                <Message>
+                                    {displayContent(content, contentType)}
+                                </Message>
+                            </Feed.Extra>
+                        </Feed.Content>
+                    </Feed.Event>
                 )
             default:
                 break
         }
     }
-
     return (
-        <React.Fragment>
-            <Feed style={{ display: 'flex' }}>
-                {renderRow(message)}
-            </Feed>
-        </React.Fragment>
+        <Feed style={{ display: 'flex' }}>
+            {renderRow(message)}
+        </Feed>
     )
-}
-
-function RenderContent({ content, contentType }) {
-    switch (contentType) {
-        case 'text':
-            return content
-        case 'image':
-            return (
-                <Feed.Extra images >
-                    <img src={content} style={{ width: '100%' }} />
-                </Feed.Extra>
-            )
-        default:
-            return null
-    }
-
-}
-
-function displayTime(timestamp) {
-    const date = new Date(timestamp / 1000)
-    const hours = date.getHours()
-    const minutes = (`0${date.getMinutes()}`).slice(-2)
-    return `${hours}:${minutes}`
 }
