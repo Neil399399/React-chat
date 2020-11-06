@@ -1,0 +1,60 @@
+version: "3"
+
+networks:
+  local:
+
+services:
+  postgres:
+    image: postgres:11-alpine
+    container_name: postgres
+    expose:
+      - ${PGPORT}/tcp
+    ports:
+      - ${PGPORT}:5432
+    environment:
+      POSTGRES_PASSWORD: ${PGPASSWORD}
+    networks:
+      - local
+
+  adminer:
+    image: adminer:latest
+    container_name: adminer
+    ports:
+      - ${ADMINER_PORT}:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+    networks:
+      - local
+
+  ejabberd:
+    image: ejabberd/ecs:latest
+    container_name: ejabberd
+    ports:
+      - 5222:5222
+      - 5443:5443
+      - 5347:5347
+    environment:
+      MESSAGING_EXTAUTH_JWK_PATH: ${MESSAGING_EXTAUTH_JWK_PATH}
+      MESSAGING_EXTAUTH_SCRIPT_PATH: ${MESSAGING_EXTAUTH_SCRIPT_PATH}
+    volumes:
+      - ./ejabberd/ejabberd.yml:${MESSAGING_CONFIG_PATH}
+      - ./ejabberd/auth.jwk:${MESSAGING_EXTAUTH_JWK_PATH}
+      - ../ejabberd-external-auth/main:${MESSAGING_EXTAUTH_SCRIPT_PATH}
+    networks:
+      - local
+
+  mongooseim:
+    image: mongooseim/mongooseim:latest
+    hostname: mongooseim
+    container_name: mongooseim
+    ports:
+      - 5222:5222 # c2s connection
+      - 5280:5280 # websocket
+      - 8008:8008 # push server
+      - 8088:8088 # REST API admin
+      - 8089:8089 # REST API client
+    volumes:
+      - ./mongooseim/auth.pem:/usr/lib/mongooseim/etc/auth.pem
+      - ./mongooseim/mongooseim.toml:/usr/lib/mongooseim/etc/mongooseim.toml
+    networks:
+      - local
