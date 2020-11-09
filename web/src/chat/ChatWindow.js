@@ -4,27 +4,28 @@ import Messages from './Messages'
 import UserInput from './UserInput'
 import { Segment } from 'semantic-ui-react'
 import { useService } from '@xstate/react'
-import { SocketMachineMg as SocketMachine, ChatMachineMg as ChatMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './chatMachineStart'
+import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
+import { mongooseimSocketService } from '../utils/chatMachineStart'
 
 function ChatWindow({ roomId }) {
     const [mgCurrent, mgSend] = useService(mongooseimSocketService)
 
     useEffect(() => {
         if (roomId && mgCurrent.matches(SocketMachine.STATES.CONNECTED)) {
-            mgSend({
+            let service = mgCurrent.context.roomMachines.get(roomId)
+            !service && mgSend({
                 type: SocketMachine.EVENTS.JOIN_ROOM,
                 room: roomId,
                 needMongooseimRoom: false,
             })
         }
-    }, [roomId])
+    }, [roomId, mgCurrent, mgSend])
 
     return (
         <Segment.Group style={{ width: '80%', height: '70%', margin: 'auto' }}>
-            <Header />
-            <Messages />
-            <UserInput />
+            <Header roomId={roomId} />
+            <Messages roomId={roomId} />
+            <UserInput roomId={roomId} />
         </Segment.Group>
     )
 }

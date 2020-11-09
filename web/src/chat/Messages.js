@@ -3,8 +3,8 @@ import React, { useEffect, useState } from 'react'
 import { Message, Segment, Feed } from 'semantic-ui-react'
 import { displayTime } from '../utils/utils'
 import { useService } from '@xstate/react'
-import { SocketMachineMg as SocketMachine, ChatMachineMg as ChatMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './chatMachineStart'
+import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
+import { mongooseimSocketService } from '../utils/chatMachineStart'
 
 function Messages({ roomId }) {
     const [mgCurrent] = useService(mongooseimSocketService)

@@ -4,9 +4,9 @@ import * as yup from 'yup'
 import { Segment, Button, Form } from 'semantic-ui-react'
 import { useService } from '@xstate/react'
 import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './chatMachineStart'
+import { mongooseimSocketService } from '../utils/chatMachineStart'
 
-function UserInput() {
+function UserInput({ roomId }) {
     const [, mgSend] = useService(mongooseimSocketService)
 
     const onSubmit = (values, { resetForm }) => {
@@ -17,7 +17,7 @@ function UserInput() {
         }
         mgSend({
             type: SocketMachine.EVENTS.SEND_GROUPCHAT,
-            room: "aliceroom",
+            room: roomId,
             message: msg,
         })
     }
@@ -30,8 +30,8 @@ function UserInput() {
                 validationSchema={validateSchema}
             >
                 {({ handleSubmit, values, handleChange, handleBlur, touched, errors }) => (
-                    <div style={{ display: 'flex' }}>
-                        <Form style={{ width: '100%', marginRight: '1%' }} onSubmit={handleSubmit}>
+                    <Form style={{ display: 'flex' }} onSubmit={handleSubmit}>
+                        <div style={{ width: '100%', marginRight: '1%', display: 'flex', flexDirection: 'column' }}>
                             <Form.Field>
                                 <Form.Input
                                     placeholder='Reply ...'
@@ -43,9 +43,13 @@ function UserInput() {
                                     error={Boolean(touched.message && errors.message) && errors.message}
                                 />
                             </Form.Field >
-                        </Form>
-                        <Button type="submit" icon="send" />
-                    </div>
+                        </div>
+                        <div style={{
+                            display: 'flex', flexDirection: 'column',
+                        }}>
+                            <Button type="submit" icon="send" />
+                        </div>
+                    </Form>
                 )}
             </Formik>
         </Segment>

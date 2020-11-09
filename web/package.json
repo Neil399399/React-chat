@@ -20,6 +20,7 @@
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^2.0.0",
     "typescript": "~3.7.2",
+    "uuid": "^8.3.1",
     "xstate": "^4.13.0",
     "yup": "^0.29.3"
   },

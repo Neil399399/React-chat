@@ -45,8 +45,8 @@ services:
 
   mongooseim:
     image: mongooseim/mongooseim:latest
-    hostname: mongooseim
-    container_name: mongooseim
+    hostname: mongooseim-1
+    container_name: mongooseim-1
     ports:
       - 5222:5222 # c2s connection
       - 5280:5280 # websocket

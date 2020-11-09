@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react'
 import { useService } from '@xstate/react'
 import { exampleUsers } from '../utils/utils'
 import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './chatMachineStart'
+import { mongooseimSocketService } from '../utils/chatMachineStart'
 import ChatWindow from './ChatWindow'
 import LoadingProgress from './LoadingProgress'
 
-function ChatBox() {
+function ChatBox({ roomId }) {
     const [mgCurrent, mgSend] = useService(mongooseimSocketService)
     const [open, setOpen] = useState(true)
 
@@ -23,10 +23,8 @@ function ChatBox() {
 
     return (
         <React.Fragment>
-            <div style={{ padding: '30px' }}>
-                <LoadingProgress state={open} handleClose={() => setOpen(false)} />
-                <ChatWindow />
-            </div>
+            <LoadingProgress state={open} handleClose={() => setOpen(false)} />
+            <ChatWindow roomId={roomId} />
         </React.Fragment>
     )
 }

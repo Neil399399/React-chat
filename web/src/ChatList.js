@@ -1,38 +1,34 @@
 import React from 'react'
-import { exampleUsers, displayTime } from '../utils/utils'
-import { Icon, Button, Table } from 'semantic-ui-react'
+import { exampleUsers, displayTime } from './utils/utils'
+import { Button, Table } from 'semantic-ui-react'
 import { useService } from '@xstate/react'
 import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './chatMachineStart'
+import { mongooseimSocketService } from './utils/chatMachineStart'
 
-const ADMIN = 'admin@localhost'
-const MONGOOSEIM_HOST = 'http://localhost:8088'
-const XMPPMUCHost = 'muclight.localhost'
+const MESSAGE_SERVER_HOST = 'http://localhost:30303'
 
-function ChatList() {
+function ChatList({ handleSetRoom }) {
     const [mgCurrent] = useService(mongooseimSocketService)
 
     const handleJoinRoom = async (roomId) => {
-        console.log("JOIN ROOM", roomId)
-        // let request = {
-        //     "sender": ADMIN,
-        //     "recipient": `${exampleUsers.bob.username}@localhost`
-        // }
+        let request = {
+            "room": roomId,
+            "recipient": `${exampleUsers.eve.username}@localhost`
+        }
 
-        // try {
-        //     let resp = await fetch(`${MONGOOSEIM_HOST}/api/muc-lights/${XMPPMUCHost}/${roomId}/participants`, {
-        //         method: 'POST',
-        //         headers: {
-        //             'Content-Type': 'application/json'
-        //         },
-        //         body: JSON.stringify(request),
-        //     })
-        //     console.log(resp)
-        //     return resp
-        // } catch (e) {
-        //     console.log("join room error", e)
-        //     throw Error(e)
-        // }
+        try {
+            await fetch(`${MESSAGE_SERVER_HOST}/mongooseim/join`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(request),
+            })
+            handleSetRoom(roomId)
+        } catch (e) {
+            console.log("join room error", e)
+            throw Error(e)
+        }
     }
 
     return (
