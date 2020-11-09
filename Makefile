@@ -6,6 +6,11 @@ local-pg:
 	docker-compose -f ${HOME_DIR}/deployment/docker-compose.yaml up -d postgres adminer
 	@sleep 5
 
+start-message-server:
+	source ${HOME_DIR}/scripts/.env_local; \
+	cd server; \
+	cargo run --bin messager-rs
+
 start-mongooseim:
 	source ${HOME_DIR}/scripts/.env_local; \
 	make local-pg; \
