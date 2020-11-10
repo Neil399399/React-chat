@@ -1,13 +1,14 @@
 import React from 'react'
-import { Segment, Button, Header as HeaderUI, Icon } from 'semantic-ui-react'
+import { Segment, Header as HeaderUI } from 'semantic-ui-react'
+import './css/Chat.css'
 
 function Header({ roomId }) {
     return (
         <Segment
+            className="chatHeader"
             clearing
             color="orange"
             inverted
-            style={{ display: 'flex' }}
         >
             <HeaderUI as='h1' content={roomId} />
         </Segment>

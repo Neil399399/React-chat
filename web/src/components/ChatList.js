@@ -1,11 +1,9 @@
 import React from 'react'
-import { exampleUsers, displayTime } from './utils/utils'
+import { exampleUsers, displayTime } from '../utils/utils'
 import { Button, Table } from 'semantic-ui-react'
 import { useService } from '@xstate/react'
-import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
-import { mongooseimSocketService } from './utils/chatMachineStart'
-
-const MESSAGE_SERVER_HOST = 'http://localhost:30303'
+import { mongooseimSocketService } from '../utils/chatMachineStart'
+import config from '../config'
 
 function ChatList({ handleSetRoom }) {
     const [mgCurrent] = useService(mongooseimSocketService)
@@ -15,19 +13,9 @@ function ChatList({ handleSetRoom }) {
             "room": roomId,
             "recipient": `${exampleUsers.eve.username}@localhost`
         }
-
-        try {
-            await fetch(`${MESSAGE_SERVER_HOST}/mongooseim/join`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(request),
-            })
+        let resp = await joinRoomAPI(request)
+        if (resp.status === 200) {
             handleSetRoom(roomId)
-        } catch (e) {
-            console.log("join room error", e)
-            throw Error(e)
         }
     }
 
@@ -74,4 +62,20 @@ function RenderRow({ machines, handleJoinRoom }) {
     })
 
     return rows
+}
+
+async function joinRoomAPI(request) {
+    try {
+        let resp = await fetch(`${config.messageServer.HOST}/mongooseim/join`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(request),
+        })
+        return resp
+    } catch (e) {
+        console.log("join room error", e)
+        throw Error(e)
+    }
 }

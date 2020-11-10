@@ -1,5 +1,6 @@
 import { interpret } from 'xstate'
 import { SocketMachineMg } from '@aetheras/ejchatjs'
+import config from '../config'
 
 const chatStorage = {
     get: function (key) {
@@ -16,14 +17,14 @@ const chatStorage = {
 }
 
 export const mongooseimSocketService = interpret(SocketMachineMg.NewMongooseimSocketMachine(
-    'socket-machine',
-    'ws://localhost:5280/ws-xmpp',
-    'localhost',
-    'muclight.localhost',
-    null,
+    config.mongooseim.ID,
+    config.mongooseim.WS_URL,
+    config.mongooseim.DOMAIN,
+    config.mongooseim.ROOM_DOMAIN,
+    config.mongooseim.PUSH_SERVER_JID,
     chatStorage,
-    null,
-    'admin',
+    config.mongooseim.RESOURCE,
+    config.mongooseim.MANAGER,
     true
 )).onTransition((state) => {
     if (state.changed) {

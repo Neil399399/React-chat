@@ -1,37 +1,69 @@
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import { Message, Segment, Feed } from 'semantic-ui-react'
 import { displayTime } from '../utils/utils'
 import { useService } from '@xstate/react'
-import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
+import LoadingProgress from '../components/LoadingProgress'
+import { ChatMachineMg as ChatMachine } from '@aetheras/ejchatjs'
 import { mongooseimSocketService } from '../utils/chatMachineStart'
+import config from '../config'
+import './css/Chat.css'
 
-function Messages({ roomId }) {
-    const [mgCurrent] = useService(mongooseimSocketService)
-    const [history, setHistory] = useState(null)
+function Messages({ roomId, messages }) {
+    const [, mgSend] = useService(mongooseimSocketService)
+    const [loading, setLoad] = useState(false)
+    const [, setTempMsgStore] = useState(null)
+    const scrollRef = useRef(null)
+
+    const checkToScrollUp = useCallback(() => {
+        setLoad((prev) => {
+            if (prev) {
+                scrollRef.current.scrollTop = config.chat.SCROLL_TOP_VALUE
+                return false
+            }
+            return prev
+        })
+    }, [])
+
+    const checkToScrollDown = useCallback(() => {
+        setTempMsgStore((prev) => {
+            if (!prev || (prev.length !== messages.length)) {
+                scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+                return messages
+            }
+            return prev
+        })
+    }, [messages])
+
 
     useEffect(() => {
-        if (roomId && mgCurrent.matches(SocketMachine.STATES.CONNECTED)) {
-            let service = mgCurrent.context.roomMachines.get(roomId)
-            service && setHistory(service.state.context.messageStore)
+        if (roomId && messages) {
+            // if have new message, scroll will automatically to bottom.
+            checkToScrollDown()
+            // if loading the history, scroll shouldn't focus on lastest message.
+            checkToScrollUp()
         }
-    }, [mgCurrent])
+    }, [checkToScrollUp, checkToScrollDown, messages, roomId])
+
+    const handleLoadHistory = () => {
+        if (scrollRef.current.scrollTop === 0) {
+            mgSend({ type: ChatMachine.EVENTS.LOAD_MSG, room: roomId, amount: config.chat.LOADING_AMOUNT })
+            setLoad(true)
+        }
+    }
 
     return (
-        <Segment style={{
-            height: '60vh',
-            overflowY: 'scroll',
-            backgroundSize: '100%',
-            padding: '20px 0px'
-        }}>
-            {history && history.map((message) => <RenderMessage key={message.id} message={message} />)}
+        <Segment className="chatMessages">
+            <div className="scroll" ref={scrollRef} onScroll={handleLoadHistory}>
+                <LoadingProgress state={loading} handleClose={() => setLoad(false)} />
+                {messages && messages.map((message) => <RenderMessage key={message.id} message={message} />)}
+            </div>
         </Segment>
     )
 }
 export default Messages
 
 function RenderMessage({ message }) {
-
     const displayContent = (content, contentType) => {
         switch (contentType) {
             case 'TEXT':
@@ -39,14 +71,13 @@ function RenderMessage({ message }) {
             case 'IMG':
                 return (
                     <Feed.Extra images >
-                        <img src={content} alt="" style={{ width: '100%' }} />
+                        <img className="image" src={content} alt="" />
                     </Feed.Extra>
                 )
             default:
                 return null
         }
     }
-
 
     const renderRow = (message) => {
         const { type, contentType, content, timestamp, id } = message

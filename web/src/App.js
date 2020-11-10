@@ -1,13 +1,13 @@
 import React, { useState } from 'react'
 import ChatBox from './chat/ChatBox'
-import ChatList from './ChatList'
-import CreateNewRoom from './CreateChatRoom'
+import ChatList from './components/ChatList'
+import CreateNewRoom from './components/CreateRoom'
 import './App.css'
 import 'semantic-ui-css/semantic.min.css'
 
 function App() {
   const [roomId, setRoomId] = useState(null)
-  console.log(roomId)
+
   return (
     <div className="App">
       <header className="App-header">
@@ -16,8 +16,8 @@ function App() {
       <main className="App-main">
         <ChatBox roomId={roomId} />
       </main>
-      <ChatList handleSetRoom={setRoomId} />
       <footer>
+        <ChatList handleSetRoom={setRoomId} />
       </footer>
     </div>
   );

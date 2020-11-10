@@ -4,7 +4,7 @@ import { exampleUsers } from '../utils/utils'
 import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
 import { mongooseimSocketService } from '../utils/chatMachineStart'
 import ChatWindow from './ChatWindow'
-import LoadingProgress from './LoadingProgress'
+import LoadingProgress from '../components/LoadingProgress'
 
 function ChatBox({ roomId }) {
     const [mgCurrent, mgSend] = useService(mongooseimSocketService)

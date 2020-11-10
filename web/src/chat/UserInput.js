@@ -5,6 +5,7 @@ import { Segment, Button, Form } from 'semantic-ui-react'
 import { useService } from '@xstate/react'
 import { SocketMachineMg as SocketMachine } from '@aetheras/ejchatjs'
 import { mongooseimSocketService } from '../utils/chatMachineStart'
+import './css/Chat.css'
 
 function UserInput({ roomId }) {
     const [, mgSend] = useService(mongooseimSocketService)
@@ -31,7 +32,7 @@ function UserInput({ roomId }) {
             >
                 {({ handleSubmit, values, handleChange, handleBlur, touched, errors }) => (
                     <Form style={{ display: 'flex' }} onSubmit={handleSubmit}>
-                        <div style={{ width: '100%', marginRight: '1%', display: 'flex', flexDirection: 'column' }}>
+                        <div className="chatField">
                             <Form.Field>
                                 <Form.Input
                                     placeholder='Reply ...'
@@ -44,9 +45,7 @@ function UserInput({ roomId }) {
                                 />
                             </Form.Field >
                         </div>
-                        <div style={{
-                            display: 'flex', flexDirection: 'column',
-                        }}>
+                        <div className="chatSendButton">
                             <Button type="submit" icon="send" />
                         </div>
                     </Form>
