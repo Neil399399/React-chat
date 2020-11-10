@@ -20,3 +20,7 @@ start-mongooseim:
 stop-mongooseim:
 	source ${HOME_DIR}/scripts/.env_local; \
 	docker-compose -f ${HOME_DIR}/deployment/docker-compose.yaml down
+
+start-web:
+	cd web; \
+	yarn install & yarn start
